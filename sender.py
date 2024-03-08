@@ -58,6 +58,6 @@ async def autoPinger():
             await asyncio.sleep(1)
             continue
         asyncio.ensure_future(pinger(resp))
-        await asyncio.sleep(1)
+        await asyncio.sleep(config.timeout)
 
 asyncio.run(autoPinger())
