@@ -24,13 +24,19 @@ async def tryRequest(resp):
         case "mexc": cexl, cexh = await requestMexcToUSDT(resp[1])
         case "okx": cexl, cexh = await requestOkxToUSDT(resp[1])
         case "bybit": cexl, cexh = await requestBybitToUSDT(resp[1])
+
+    print(cexl, cexh)
+    # print(resp[3], resp[4], resp[6], resp[5], )
+
     dexl, dexh = await request1inchToUSDT(fromTokenAddress=resp[3], toTokenAddress=resp[4], amount=resp[6], decimal=resp[5])
+
+    # print(dexl, dexh)
+
     profitDC = (cexl - dexh) / dexh * 100
     profitCD = (dexl - cexh) / cexh * 100
 
 
-    # print(dexl, dexh)
-    # print(cexl, cexh)
+
     # print(profitCD, profitDC)
 
     return f'{dexl}, {dexh}\n{cexl}, {cexh}\n{profitCD}, {profitDC}'
@@ -48,21 +54,20 @@ async def start_handler(msg: Message):
         msgl = msg.text.split(' ')
         try:
             match msgl[4].lower():
-                case 'base':
-                    msgl[4] = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913'
                 case 'eth':
                     msgl[4] = '0xdac17f958d2ee523a2206206994597c13d831ec7'
+                case 'base':
+                    msgl[4] = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
                 case 'bsc':
                     msgl[4] = '0x55d398326f99059ff775485246999027b3197955'
                 case 'arb':
-                    msgl[4] = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
-                case 'polygon':
-                    msgl[4] = '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85'
-                case 'optimism':
                     msgl[4] = '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9'
+                case 'polygon':
+                    msgl[4] = '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359'
+                case 'optimism':
+                    msgl[4] = '0x0b2c639c533813f4aa9d7837caf62653d097ff85'
                 case 'avax':
-                    msgl[4] = '0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7'
-
+                    msgl[4] = '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'
             resp = await tryRequest(msgl)
 
             await appendToTable(name=msgl[1], ex=msgl[2], from_add=msgl[3], to_add=msgl[4],
@@ -77,7 +82,7 @@ async def start_handler(msg: Message):
         sh=''
         resp = await showTable()
         for st in resp:
-            sh+=f'{st[0]}||{st[15]}||{round(st[11],2)}|{round(st[12],2)}\n'
+            sh+=f'{st[0]}||{st[15]}||{st[5]}$||{round(st[11],2)}|{round(st[12],2)}\n'
         if sh!='': await msg.answer(sh[:-1])
         else: await msg.answer('Нет отслеживаемых токенов ')
 

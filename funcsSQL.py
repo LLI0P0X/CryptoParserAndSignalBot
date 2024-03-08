@@ -3,8 +3,10 @@ import datetime
 import aiosqlite
 import asyncio
 
+import config
 
-async def createTable(database='data.db', table='customPreset'):
+
+async def createTable(database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         await db.execute(f'''CREATE TABLE {table} (
         id TEXT PRIMARY KEY,
@@ -31,7 +33,7 @@ async def createTable(database='data.db', table='customPreset'):
             return await cursor.fetchall()
 
 
-async def appendToTable(database='data.db', table='customPreset',
+async def appendToTable(database=config.pathToBd+'data.db', table='customPreset',
                         name='ETH',
                         ex='bybit',
                         from_add='0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
@@ -41,20 +43,20 @@ async def appendToTable(database='data.db', table='customPreset',
                         need=0.01
                         ):
     net = 'err'
-    match to_add.lower()[3]:
-        case '3':
-            net = 'base'
-        case 'a':
+    match to_add:
+        case '0xdac17f958d2ee523a2206206994597c13d831ec7':
             net = 'eth'
-        case '5':
+        case '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913':
+            net = 'base'
+        case '0x55d398326f99059ff775485246999027b3197955':
             net = 'bsc'
-        case 'x':
+        case '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9':
             net = 'arb'
-        case 'b':
+        case '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359':
             net = 'polygon'
-        case 'd':
+        case '0x0b2c639c533813f4aa9d7837caf62653d097ff85':
             net = 'optimism'
-        case '7':
+        case '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7':
             net = 'avax'
     params = (
         f'{name}_{ex}_{net}',
@@ -83,19 +85,19 @@ async def appendToTable(database='data.db', table='customPreset',
             return await cursor.fetchall()
 
 
-async def showTable(database='data.db', table='customPreset'):
+async def showTable(database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         async with db.execute(f'SELECT * FROM {table}') as cursor:
             return await cursor.fetchall()
 
 
-async def needUpdateInTable(database='data.db', table='customPreset'):
+async def needUpdateInTable(database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         async with db.execute(f'SELECT * FROM {table} WHERE time != 0 ORDER BY time') as cursor:
             return await cursor.fetchall()
 
 
-async def updateInTable(id, database='data.db', table='customPreset', dexl=None, dexh=None, cexl=None, cexh=None,
+async def updateInTable(id, database=config.pathToBd+'data.db', table='customPreset', dexl=None, dexh=None, cexl=None, cexh=None,
                         dc=None, cd=None, time=None, txt_time=None, need=None, ping=None):
     args = {'dexl': dexl,
             'dexh': dexh,
@@ -132,31 +134,31 @@ async def updateInTable(id, database='data.db', table='customPreset', dexl=None,
 #             return await cursor.fetchall()
 
 
-async def removeTable(database='data.db', table='customPreset'):
+async def removeTable(database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         await db.execute(f'DROP TABLE {table}')
         await db.commit()
 
 
-async def removeFromTable(id, database='data.db', table='customPreset'):
+async def removeFromTable(id, database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         await db.execute(f'DELETE FROM {table} WHERE id = ?', [id])
         await db.commit()
 
 
-async def starterForTable(database='data.db', table='customPreset'):
+async def starterForTable(database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         await db.execute(f'UPDATE {table} SET time=1')
         await db.commit()
 
 
-async def findByID(id, database='data.db', table='customPreset'):
+async def findByID(id, database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         async with db.execute(f'SELECT * FROM {table} WHERE id = ?', [id]) as cursor:
             return await cursor.fetchall()
 
 
-async def pingsFromTable(database='data.db', table='customPreset'):
+async def pingsFromTable(database=config.pathToBd+'data.db', table='customPreset'):
     async with aiosqlite.connect(database) as db:
         async with db.execute(f'SELECT * FROM {table} WHERE ping > ?', [0]) as cursor:
             return await cursor.fetchall()
