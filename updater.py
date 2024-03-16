@@ -1,5 +1,3 @@
-import asyncio
-
 from funcsSQL import *
 from requestsPrices import *
 import datetime

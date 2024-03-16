@@ -1,5 +1,4 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-
 from funcsSQL import *
 from aiogram import Bot, types
 import config

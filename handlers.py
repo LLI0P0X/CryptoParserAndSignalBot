@@ -1,18 +1,8 @@
-import aiogram
-from aiogram import types, F, Router
+from aiogram import types, Bot, Router
 from aiogram.types import Message
 from aiogram.filters import Command
-from funcsSQL import appendToTable
-
-from aiogram import Bot, Dispatcher
-from aiogram.enums.parse_mode import ParseMode
-
-import config
-
 from requestsPrices import *
 from funcsSQL import *
-
-import asyncio
 
 router = Router()
 
@@ -26,18 +16,11 @@ async def tryRequest(resp):
         case "bybit": cexl, cexh = await requestBybitToUSDT(resp[1])
 
     print(cexl, cexh)
-    # print(resp[3], resp[4], resp[6], resp[5], )
 
     dexl, dexh = await request1inchToUSDT(fromTokenAddress=resp[3], toTokenAddress=resp[4], amount=resp[6], decimal=resp[5])
 
-    # print(dexl, dexh)
-
     profitDC = (cexl - dexh) / dexh * 100
     profitCD = (dexl - cexh) / cexh * 100
-
-
-
-    # print(profitCD, profitDC)
 
     return f'{dexl}, {dexh}\n{cexl}, {cexh}\n{profitCD}, {profitDC}'
 

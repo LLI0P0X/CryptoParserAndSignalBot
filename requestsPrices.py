@@ -1,7 +1,4 @@
-import requests
-import json
 import time
-import datetime
 import asyncio
 import aiohttp
 
@@ -40,7 +37,6 @@ async def request1inchToUSDTBuy(fromTokenAddress, toTokenAddress='0xdac17f958d2e
             jsn = await resp.json()
             try:
                 st = str(jsn['marketAmount'])
-                # fl=float(st[:-6]+'.'+st[-6:])
                 fl = float(st)
                 return fl
             except:
@@ -100,27 +96,16 @@ async def requestOkxToUSDT(name):
             except:
                 return jsn
 
-        # async with session.get(f'https://www.okx.com/api/v5/public/price-limit?instId={name}-USDT-SWAP') as resp:
-        #     jsn = await resp.json()
-        #     try:
-        #         return float(jsn['data'][0]['sellLmt']), float(jsn['data'][0]['buyLmt'])
-        #     except:
-        #         return jsn
-
 
 async def requestBybitToUSDT(name):
     async with aiohttp.ClientSession() as session:
-        # async with session.get(
-        #         f'https://api.bybit.com/v5/market/tickers?category=inverse&symbol={name}USDT') as resp:
         async with session.get(
                 f'https://api.bybit.com/spot/v3/public/quote/ticker/24hr?symbol={name}USDT') as resp:
             jsn = await resp.json()
             try:
-                # return float(jsn['result']['list'][0]['bid1Price']), float(jsn['result']['list'][0]['ask1Price'])
                 return float(jsn['result']['bp']), float(jsn['result']['ap'])
             except:
                 return jsn
-            # return json.dumps(jsn,indent=4)
 
 
 if __name__ == '__main__':
