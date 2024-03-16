@@ -7,8 +7,8 @@ async def getTime():
     return int(time.time() * 1000)
 
 
-async def request1inchToUSDTBuy(fromTokenAddress, toTokenAddress='0xdac17f958d2ee523a2206206994597c13d831ec7',
-                                amount=5000000000, rev=False):
+async def request1inchToUSDT(fromTokenAddress, toTokenAddress='0xdac17f958d2ee523a2206206994597c13d831ec7',
+                             amount=5000000000, rev=False):
     walletAddress = '0x0000000000000000000000000000000000000000'
     # fromTokenAddress='0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'
     # toTokenAddress='0xdac17f958d2ee523a2206206994597c13d831ec7' #USDT
@@ -43,20 +43,46 @@ async def request1inchToUSDTBuy(fromTokenAddress, toTokenAddress='0xdac17f958d2e
                 return jsn
 
 
-async def request1inchToUSDT(fromTokenAddress, toTokenAddress, amount, decimal):
+async def requestSolToUSDT(fromTokenAddress, toTokenAddress, amount, rev=False):
+    async with aiohttp.ClientSession() as session:
+        if rev:
+            fromTokenAddress, toTokenAddress = toTokenAddress, fromTokenAddress
+        async with session.get(
+                f'https://quote-api.jup.ag/v6/quote?inputMint={fromTokenAddress}&outputMint={toTokenAddress}&amount={amount}&slippageBps=50&computeAutoSlippage=true&swapMode=ExactIn&onlyDirectRoutes=false&asLegacyTransaction=false&maxAccounts=64&experimentalDexes=Jupiter%20LO') as resp:
+            jsn = await resp.json()
+            try:
+                st = str(jsn['outAmount'])
+                fl = float(st)
+                return fl
+            except:
+                return jsn
+
+
+async def requestDexToUSDT(fromTokenAddress, toTokenAddress, amount, decimal):
     dusdt = 6
     if toTokenAddress == '0x55d398326f99059ff775485246999027b3197955':
-        dusdt=18
+        dusdt = 18
     amount = int(amount) * 10 ** dusdt
     decimal = int(decimal)
-    yR = await request1inchToUSDTBuy(fromTokenAddress, toTokenAddress, amount, rev=True)
-    try:
-        xR = await request1inchToUSDTBuy(fromTokenAddress, toTokenAddress, int(yR))
-        x = xR / yR * 10 ** (decimal - dusdt)
-        y = amount / yR * 10 ** (decimal - dusdt)
-        return (x, y)
-    except:
-        return yR
+
+    if toTokenAddress == 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB':
+        yR = await requestSolToUSDT(fromTokenAddress, toTokenAddress, amount, rev=True)
+        try:
+            xR = await requestSolToUSDT(fromTokenAddress, toTokenAddress, int(yR))
+            x = xR / yR * 10 ** (decimal - dusdt)
+            y = amount / yR * 10 ** (decimal - dusdt)
+            return (x, y)
+        except:
+            return yR
+    else:
+        yR = await request1inchToUSDT(fromTokenAddress, toTokenAddress, amount, rev=True)
+        try:
+            xR = await request1inchToUSDT(fromTokenAddress, toTokenAddress, int(yR))
+            x = xR / yR * 10 ** (decimal - dusdt)
+            y = amount / yR * 10 ** (decimal - dusdt)
+            return (x, y)
+        except:
+            return yR
 
 
 async def requestBinanceToUSDT(name):
@@ -109,8 +135,10 @@ async def requestBybitToUSDT(name):
 
 
 if __name__ == '__main__':
-    # print(asyncio.run(request1inchToUSDT('0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82', '0x55d398326f99059ff775485246999027b3197955', 100000, 18)))
+    print(asyncio.run(
+        requestDexToUSDT('So11111111111111111111111111111111111111112', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+                         1, 9)))
     # print(asyncio.run(requestBinanceToUSDT('ETH')))
-    print(asyncio.run(requestBybitToUSDT('ETH')))
+    # print(asyncio.run(requestBybitToUSDT('ETH')))
     # print(asyncio.run(requestOkxToUSDT('ETH')))
     # print(asyncio.run(requestBybitToUSDT('ETH')))

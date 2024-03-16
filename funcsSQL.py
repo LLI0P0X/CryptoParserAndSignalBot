@@ -56,6 +56,8 @@ async def appendToTable(database=config.pathToBd + 'data.db', table='customPrese
             net = 'optimism'
         case '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7':
             net = 'avax'
+        case 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB':
+            net = 'sol'
     params = (
         f'{name}_{ex}_{net}',
         from_add,
@@ -116,7 +118,6 @@ async def updateInTable(id, database=config.pathToBd + 'data.db', table='customP
             params.append(args[arg])
     params.append(id)
     query = query[:-1] + ' WHERE id = ?'
-    print(query, params)
     async with aiosqlite.connect(database) as db:
         await db.execute(query, params)
         await db.commit()
