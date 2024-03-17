@@ -1,6 +1,13 @@
 import time
 import asyncio
+from datetime import datetime
 import aiohttp
+
+import secret
+
+if type(secret.proxy) == list:
+    glb = globals()
+    ipr = 0
 
 
 async def getTime():
@@ -45,10 +52,16 @@ async def request1inchToUSDT(fromTokenAddress, toTokenAddress='0xdac17f958d2ee52
 
 async def requestSolToUSDT(fromTokenAddress, toTokenAddress, amount, rev=False):
     async with aiohttp.ClientSession() as session:
+        proxy = secret.proxy
+        if type(proxy) == list:
+            glb = globals()
+            glb['ipr'] += 1
+            proxy = proxy[glb['ipr'] % len(proxy)]
         if rev:
             fromTokenAddress, toTokenAddress = toTokenAddress, fromTokenAddress
         async with session.get(
-                f'https://quote-api.jup.ag/v6/quote?inputMint={fromTokenAddress}&outputMint={toTokenAddress}&amount={amount}&slippageBps=50&computeAutoSlippage=true&swapMode=ExactIn&onlyDirectRoutes=false&asLegacyTransaction=false&maxAccounts=64&experimentalDexes=Jupiter%20LO') as resp:
+                f'https://quote-api.jup.ag/v6/quote?inputMint={fromTokenAddress}&outputMint={toTokenAddress}&amount={amount}&slippageBps=50&computeAutoSlippage=true&swapMode=ExactIn&onlyDirectRoutes=false&asLegacyTransaction=false&maxAccounts=64&experimentalDexes=Jupiter%20LO',
+                proxy=proxy) as resp:
             jsn = await resp.json()
             try:
                 st = str(jsn['outAmount'])
@@ -134,11 +147,21 @@ async def requestBybitToUSDT(name):
                 return jsn
 
 
+async def chekCex(name):
+    while True:
+        t = datetime.now()
+        r = await requestDexToUSDT('So11111111111111111111111111111111111111112',
+                                   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+                                   1, 9)
+        print(f'Начало: {t}\nКонец:  {datetime.now()}\nИтого:  {datetime.now() - t}\nОтвет:  {r}\n')
+
+
 if __name__ == '__main__':
-    print(asyncio.run(
-        requestDexToUSDT('So11111111111111111111111111111111111111112', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-                         1, 9)))
+    # print(asyncio.run(
+    #     requestDexToUSDT('So11111111111111111111111111111111111111112', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    #                      1, 9)))
     # print(asyncio.run(requestBinanceToUSDT('ETH')))
     # print(asyncio.run(requestBybitToUSDT('ETH')))
     # print(asyncio.run(requestOkxToUSDT('ETH')))
     # print(asyncio.run(requestBybitToUSDT('ETH')))
+    print(asyncio.run(chekCex('BOME')))
