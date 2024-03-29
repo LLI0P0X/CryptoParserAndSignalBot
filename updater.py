@@ -11,7 +11,6 @@ async def starter():
 
 
 async def autoRequest(resp):
-    print(f'{datetime.datetime.now()} hi {resp[0]}')
     cexl, cexh = 0, 0
     match resp[6]:
         case "binance":
@@ -54,7 +53,6 @@ async def main():
     while True:
         resp = await needUpdateInTable()
         if resp == []:
-            print(f'{datetime.datetime.now()} sleep')
             await asyncio.sleep(1)
             continue
         asyncio.ensure_future(autoRequester(resp[0]))

@@ -175,5 +175,4 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(updateInTable(id='ETH_bybit_eth', txt_time=str(datetime.datetime.now())))
-    # asyncio.run(main())
+    asyncio.run(main())

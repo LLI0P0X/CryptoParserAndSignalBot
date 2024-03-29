@@ -34,7 +34,7 @@ async def tryRequest(resp):
 @router.message(Command("start"))
 async def start_handler(msg: Message):
     if msg.chat.id in config.users:
-        await msg.answer("Добро подаловать")
+        await msg.answer("Добро пожаловать")
     else:
         await msg.answer("Ошибка авторизации")
 
@@ -104,7 +104,6 @@ async def start_handler(msg: Message):
             str('Введите /create [имя токена] [имя биржи] [адрес текена] [адрес usdt в выбранной сети] [decimals], [amount], [процент для сигнала]\nНапример:\n/create ETH bybit 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 0xdac17f958d2ee523a2206206994597c13d831ec7 18 1000000000000000000 0.01'))
 
 
-# /req 0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2 0xdac17f958d2ee523a2206206994597c13d831ec7 ETH 18 1000000000000000000 bybit
 @router.message(Command("req"))
 async def start_handler(msg: Message):
     if msg.chat.id in config.users:

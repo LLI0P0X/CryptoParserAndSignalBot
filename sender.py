@@ -67,7 +67,7 @@ async def autoPinger():
                 timeout = int(f.read())
         except:
             timeout = config.timeout
-        print(timeout)
+        print(f'sleep: {timeout}')
         await asyncio.sleep(timeout)
 
 

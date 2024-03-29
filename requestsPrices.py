@@ -3,9 +3,9 @@ import asyncio
 from datetime import datetime
 import aiohttp
 
-import secret
+import config
 
-if type(secret.proxy) == list:
+if type(config.proxy) == list:
     glb = globals()
     ipr = 0
 
@@ -52,7 +52,7 @@ async def request1inchToUSDT(fromTokenAddress, toTokenAddress='0xdac17f958d2ee52
 
 async def requestSolToUSDT(fromTokenAddress, toTokenAddress, amount, rev=False):
     async with aiohttp.ClientSession() as session:
-        proxy = secret.proxy
+        proxy = config.proxy
         if type(proxy) == list:
             glb = globals()
             glb['ipr'] += 1
@@ -102,8 +102,10 @@ async def requestBinanceToUSDT(name):
     async with aiohttp.ClientSession() as session:
         async with session.get(f'https://www.binance.com/api/v3/depth?symbol={name}USDT&limit=1') as resp:
             jsn = await resp.json()
-            return float(jsn["bids"][0][0]), float(jsn["asks"][0][0])
-            # return jsn
+            try:
+                return float(jsn["bids"][0][0]), float(jsn["asks"][0][0])
+            except:
+                return jsn
 
 
 async def requestMexcToUSDT(name):
@@ -147,21 +149,5 @@ async def requestBybitToUSDT(name):
                 return jsn
 
 
-async def chekCex(name):
-    while True:
-        t = datetime.now()
-        r = await requestDexToUSDT('So11111111111111111111111111111111111111112',
-                                   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-                                   1, 9)
-        print(f'Начало: {t}\nКонец:  {datetime.now()}\nИтого:  {datetime.now() - t}\nОтвет:  {r}\n')
-
-
 if __name__ == '__main__':
-    # print(asyncio.run(
-    #     requestDexToUSDT('So11111111111111111111111111111111111111112', 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
-    #                      1, 9)))
-    # print(asyncio.run(requestBinanceToUSDT('ETH')))
-    # print(asyncio.run(requestBybitToUSDT('ETH')))
-    # print(asyncio.run(requestOkxToUSDT('ETH')))
-    # print(asyncio.run(requestBybitToUSDT('ETH')))
-    print(asyncio.run(chekCex('BOME')))
+    print('None')
